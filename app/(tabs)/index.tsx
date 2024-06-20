@@ -1,72 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { ActivityIndicator, Button, FlatList, Text, View } from 'react-native';
-import { TextInput } from 'react-native-gesture-handler';
+import { createStackNavigator } from '@react-navigation/stack';
+import TabTwoScreen from './explore';
+import App from './busca';
 
-type CEP = {
-  cep: string;
-  logradouro: string;
-  complemento: string;
-  bairro: string;
-  localidade: string;
-  uf: string;
-  ibge: string;
-  gia: string;
-  ddd: string;
-  siafi: string;
-};
+const Stack = createStackNavigator();
 
-const App = () => {
-  const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState<CEP>();
-  const [text, onChangeText] = useState('');
-
-  const buscaCep = async () => {
-    try {
-      const response = await fetch(`https://viacep.com.br/ws/${text}/json/`);
-      const json = await response.json();
-      setData(json);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    buscaCep();
-  }, [text]);
-
+const AppNavigator = () => {
   return (
-    <View style={{ flex: 1, padding: 24 }}>
-      <TextInput
-        onChangeText={onChangeText}
-        value={text}
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Home"
+        component={App}
+        options={{ title: 'Busca CEP' }}
       />
-
-      <Button title="Busca Cep" onPress={buscaCep} />
-
-      {isLoading ? (
-        <ActivityIndicator /> 
-      ) : (
-        data ? (
-          <Text>
-            CEP: {data.cep}
-            {'\n'} Logradouro: {data.logradouro}
-            {'\n'} Complemento: {data.complemento}
-            {'\n'} Bairro: {data.bairro}
-            {'\n'} Localidade: {data.localidade}
-            {'\n'} UF: {data.uf}
-            {'\n'} IBGE: {data.ibge}
-            {'\n'} GIA: {data.gia}
-            {'\n'} DDD: {data.ddd}
-            {'\n'} SIAFI: {data.siafi}
-          </Text>
-        ) : (
-          <Text>Nenhum dado encontrado</Text> 
-        )
-      )}
-    </View>
+      <Stack.Screen
+        name="Details"
+        component={TabTwoScreen}
+        options={{ title: 'Detalhes do CEP' }}
+      />
+    </Stack.Navigator>
   );
 };
 
-export default App;
+export default AppNavigator;
